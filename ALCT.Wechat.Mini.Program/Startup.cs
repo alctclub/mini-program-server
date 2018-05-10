@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using ALCT.Wechat.Mini.Program.Databases;
 using ALCT.Wechat.Mini.Program.BusinessLogics;
 using ALCT.Wechat.Mini.Program.Agents;
+using ALCT.Wechat.Mini.Program.Models;
 
 namespace ALCT.Wechat.Mini.Program
 {
@@ -42,7 +44,7 @@ namespace ALCT.Wechat.Mini.Program
             services.AddMvc();
             services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
             services.AddOptions();
-
+            
             var serviceProvider = services.BuildServiceProvider();
             this.loggerFactory = serviceProvider.GetService<ILoggerFactory>();
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -57,8 +59,14 @@ namespace ALCT.Wechat.Mini.Program
 
             services.AddScoped<IAuthenticationBusinessLogic, AuthenticationBusinessLogic>();
             services.AddScoped<IShipmentBusinessLogic, ShipmentBusinessLogic>();
+            services.AddScoped<IInvoiceBusinessLogic, InvoiceBusinessLogic>();
+            services.AddScoped<IImageBusinessLogic, ImageBusinessLogic>();
             services.AddScoped<IAuthenticationAgent, AuthenticationAgent>();
+            services.AddScoped<IDriverInvoiceAgent, DriverInvoiceAgent>();
             services.AddScoped<IShipmentAgent, ShipmentAgent>();
+            services.AddScoped<IImageAgent, ImageAgent>();
+            services.AddScoped<IConfigurationService, ConfigurationService>();
+            serviceProvider = services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +76,8 @@ namespace ALCT.Wechat.Mini.Program
             loggerFactory.AddDebug();
             loggerFactory.AddNLog();
             this.loggerFactory = loggerFactory;
+            
+            app.AddNLogWeb();
 
             if (env.IsDevelopment())
             {

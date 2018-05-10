@@ -15,13 +15,15 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
         private string[] AllowOperates = new string[] {"pickup", "unload", "sign", "pod"};
         public ShipmentBusinessLogic(MPDbContext dbContext,
             IAuthenticationAgent authenticationAgent,
+            IConfigurationService configurationService,
             IShipmentAgent shipmentAgent,
             ILogger<ShipmentBusinessLogic> logger)
         {
             this.dbContext = dbContext;
             this.authenticationAgent = authenticationAgent;
+            this.configurationService = configurationService;
             this.shipmentAgent = shipmentAgent;
-            this.aLCTConfiguration = new ALCTConfiguration();
+            this.aLCTConfiguration = configurationService.GetALCTConfiguration();
             this.logger = logger;
         }
 

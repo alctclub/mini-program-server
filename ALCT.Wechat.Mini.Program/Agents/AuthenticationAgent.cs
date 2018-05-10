@@ -1,3 +1,4 @@
+using ALCT.Wechat.Mini.Program.BusinessLogics;
 using ALCT.Wechat.Mini.Program.Models;
 using ALCT.Wechat.Mini.Program.Utils;
 
@@ -12,9 +13,10 @@ namespace ALCT.Wechat.Mini.Program.Agents
 {
     public class AuthenticationAgent : BasicAgent, IAuthenticationAgent
     {
-        public AuthenticationAgent(ILogger<AuthenticationAgent> logger)
+        public AuthenticationAgent(IConfigurationService configurationService, 
+            ILogger<AuthenticationAgent> logger)
         {
-            this.aLCTConfiguration = new ALCTConfiguration();
+            this.aLCTConfiguration = configurationService.GetALCTConfiguration();
             this.logger = logger;
         }
 

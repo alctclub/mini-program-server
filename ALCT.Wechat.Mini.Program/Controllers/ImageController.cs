@@ -14,33 +14,46 @@ namespace ALCT.Wechat.Mini.Program.Controllers
     [Route("api/v1/miniprogram/images")]
     public class ImageController : BasicController
     {
-        public ImageController() 
+        private readonly IImageBusinessLogic imageBusinessLogic;
+        public ImageController(IImageBusinessLogic imageBusinessLogic)
         {
-
+            this.imageBusinessLogic = imageBusinessLogic;
+            this.basicBusinessLogic = (BasicBusinessLogic)imageBusinessLogic;
         }
 
         [HttpPost]
         [Route("")]
         public IActionResult UploadImage([FromForm]ImageUploadModel image)
-        {
-            
-            return Ok();
+        {            
+            if(!CheckSessionId()) 
+            {
+                return Unauthorized();
+            }
+            return Ok(imageBusinessLogic.UploadFile(GetSessionId(), image));
         }
 
         [HttpDelete]
-        [Route("{operation}")]
-        public IActionResult DeleteImage(string operation, [FromQuery]DeleteImageRequest request)
+        [Route("{imageType}")]
+        public IActionResult DeleteImage(string imageType, [FromQuery]DeleteImageRequest request)
         {
-
-            return Ok();
+            if(!CheckSessionId()) 
+            {
+                return Unauthorized();
+            }
+            request.ImageType = imageType;
+            return Ok(imageBusinessLogic.DeleteFile(GetSessionId(), request));
         }
 
         [HttpGet]
-        [Route("{operation}")]
-        public IActionResult GetImages(string operation, string orderCode, string shipmentCode) 
+        [Route("{imageType}")]
+        public IActionResult GetImages(string imageType, string shipmentCode) 
         {
-            
-            return Ok();
+            if(!CheckSessionId()) 
+            {
+                return Unauthorized();
+            }
+
+            return Ok(imageBusinessLogic.GetFiles(GetSessionId(), shipmentCode, imageType));
         }
     }
 }

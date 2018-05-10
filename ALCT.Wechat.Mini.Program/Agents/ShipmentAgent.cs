@@ -1,3 +1,4 @@
+using ALCT.Wechat.Mini.Program.BusinessLogics;
 using ALCT.Wechat.Mini.Program.Models;
 using ALCT.Wechat.Mini.Program.Utils;
 
@@ -5,14 +6,17 @@ using System;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace ALCT.Wechat.Mini.Program.Agents
 {
     public class ShipmentAgent : BasicAgent, IShipmentAgent
     {
-        public ShipmentAgent() 
+        public ShipmentAgent(IConfigurationService configurationService, 
+            ILogger<ShipmentAgent> logger) 
         {
-            this.aLCTConfiguration = new ALCTConfiguration();
+            this.logger = logger;
+            this.aLCTConfiguration = configurationService.GetALCTConfiguration();
         }
 
         public IList<Shipment> GetExecutingShipments(string token) 

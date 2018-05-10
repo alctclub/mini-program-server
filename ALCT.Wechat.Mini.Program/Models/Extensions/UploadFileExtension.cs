@@ -16,8 +16,8 @@ namespace ALCT.Wechat.Mini.Program.Models
             {
                 ShipmentCode = model.ShipmentCode,
                 ImageType = model.ImageType,
-                FileName = model.MyImage.FileName,
-                FileExt = Path.GetExtension(model.MyImage.FileName),
+                FileName = Path.GetFileNameWithoutExtension(model.MyImage.FileName),
+                FileExt = Path.GetExtension(model.MyImage.FileName).Trim('.'),
                 FileData = string.Empty,
                 BaiduLatitude = model.Latitude,
                 BaiduLongitude = model.Longitude,
@@ -27,10 +27,8 @@ namespace ALCT.Wechat.Mini.Program.Models
 
             using(MemoryStream ms = new MemoryStream())
             {
-                model.MyImage.CopyTo(ms);
-                var bytes = new byte[ms.Length];
-                ms.Read(bytes, 0, bytes.Length);
-                alctModel.FileData = Convert.ToBase64String(bytes);
+                model.MyImage.CopyTo(ms);                
+                alctModel.FileData = Convert.ToBase64String(ms.ToArray());
             }
 
             return alctModel;

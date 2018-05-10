@@ -14,13 +14,15 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
         private readonly IDriverInvoiceAgent driverInvoiceAgent;
         public InvoiceBusinessLogic(MPDbContext dbContext,
             IAuthenticationAgent authenticationAgent,
+            IConfigurationService configurationService,
             IDriverInvoiceAgent driverInvoiceAgent,
             ILogger<ShipmentBusinessLogic> logger)
         {
             this.dbContext = dbContext;
             this.authenticationAgent = authenticationAgent;
+            this.configurationService = configurationService;
             this.driverInvoiceAgent = driverInvoiceAgent;
-            this.aLCTConfiguration = new ALCTConfiguration();
+            this.aLCTConfiguration = configurationService.GetALCTConfiguration();
             this.logger = logger;
         }
 
@@ -29,6 +31,7 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
             try
             {
                 var response = driverInvoiceAgent.GetDriverInvoices(GetToken(sessionId).AccessToken);
+                return response;
             }
             catch(Exception ex)
             {
@@ -51,10 +54,16 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
                     DriverInvoiceCode = invoiceCode
                 });
                 
+                if(alctResponse.Code != "0") 
+                {
+                    return new BasicResponseModel() 
+                    {
+                        Code = InvoiceErrorCode.ConfrimInvoiceFailed,
+                        Message = alctResponse.Message
+                    };
+                }
 
-                var response = new BasicResponseModel();
-
-                return response;
+                return new BasicResponseModel();
             }
             catch(Exception ex)
             {

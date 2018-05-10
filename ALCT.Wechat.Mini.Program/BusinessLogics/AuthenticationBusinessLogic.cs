@@ -9,24 +9,30 @@ using Senparc.Weixin.WxOpen.Entities.Request;
 using Senparc.Weixin.WxOpen.AdvancedAPIs.Sns;
 
 using System;
+using System.Threading;
 using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Hosting;
 
 namespace ALCT.Wechat.Mini.Program.BusinessLogics
 {
     public class AuthenticationBusinessLogic : BasicBusinessLogic, IAuthenticationBusinessLogic
     {
+        private readonly IHostingEnvironment environment;
         public AuthenticationBusinessLogic(MPDbContext dbContext,
             IAuthenticationAgent authenticationAgent,
-            IOptions<WechatConfiguration> options,
+            IConfigurationService configurationService,
+            IHostingEnvironment env,
             ILogger<AuthenticationBusinessLogic> logger) 
         {
             this.dbContext = dbContext;
             this.authenticationAgent = authenticationAgent;
-            this.wxConfiguration = options.Value;
-            this.aLCTConfiguration = new ALCTConfiguration();
+            this.configurationService = configurationService;
+            this.wxConfiguration = configurationService.GetWechatConfiguration();
+            this.aLCTConfiguration = configurationService.GetALCTConfiguration();
+            this.environment = env;
             this.logger = logger;
         }
 
@@ -142,8 +148,12 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
                 CreatedDate = DateTime.Now
             };
             
-            dbContext.Add(member);
-            dbContext.SaveChanges();
+            using(var transaction = dbContext.Database.BeginTransaction()) 
+            {
+                dbContext.Add(member);
+                dbContext.SaveChanges();
+                transaction.Commit();
+            }
             
             var token = GetToken(member);
             if(token == null) 
@@ -160,8 +170,11 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
 
         private string GetWechatSessionId(string weiXinCode)
         {
-            var tag = SessionContainer.UpdateSession(null, "872e2864-ffd9-4b37-a2b2-53780141b1a5", "872e2864-ffd9-4b37-a2b2-53780141b1a5");
-            return tag.Key;
+            if(environment.EnvironmentName == "dev" || environment.EnvironmentName == "qa") 
+            {
+                var tag = SessionContainer.UpdateSession(null, "071TIDkB14xCof0eHekB1I4NkB1TIDk5", "071TIDkB14xCof0eHekB1I4NkB1TIDk5");
+                return tag.Key;
+            }
             
             var jsonResult = SnsApi.JsCode2Json(wxConfiguration.AppId, wxConfiguration.AppSecret, weiXinCode);
             if (jsonResult.errcode == ReturnCode.请求成功)

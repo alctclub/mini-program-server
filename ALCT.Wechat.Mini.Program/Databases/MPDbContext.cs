@@ -19,5 +19,6 @@ namespace ALCT.Wechat.Mini.Program.Databases
 
         public DbSet<Token> Token { get; set; }
         public DbSet<Member> Member { get; set; }
+        public DbSet<SystemConfig> SystemConfig {get; set;}
     }
 }

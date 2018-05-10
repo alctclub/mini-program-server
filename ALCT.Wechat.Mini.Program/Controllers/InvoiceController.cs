@@ -25,20 +25,20 @@ namespace ALCT.Wechat.Mini.Program.Controllers
         {
             if(!CheckSessionId()) 
             {
-                return Ok(response);
+                return Unauthorized();
             }
             return Ok(invoiceBusinessLogic.GetInvoices(GetSessionId()));
         }
 
         [HttpPut]
         [Route("confirm")]
-        public IActionResult ConfirmInvoice(ConfirmInvoiceRequest request) 
+        public IActionResult ConfirmInvoice([FromBody]ConfirmInvoiceRequest request) 
         {
             if(!CheckSessionId()) 
             {
-                return Ok(response);
+                return Unauthorized();
             }
-            
+
             return Ok(invoiceBusinessLogic.ConfirmInvoice(GetSessionId(), request.DriverInvoiceCode));
         }
     }

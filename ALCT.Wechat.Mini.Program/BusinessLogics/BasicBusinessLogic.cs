@@ -18,6 +18,7 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
         protected ALCTConfiguration aLCTConfiguration;
         protected WechatConfiguration wxConfiguration;
         protected ILogger logger;
+        protected IConfigurationService configurationService;
 
         protected Token GetApiToken() 
         {
@@ -42,7 +43,7 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
                     {
                         var expiredTokens = (from t in dbContext.Set<Token>() where t.OpenId == aLCTConfiguration.EnterpriseCode select t).ToList();
                         dbContext.RemoveRange(expiredTokens);
-                        dbContext.AddAsync(token);
+                        dbContext.Add(token);
                         transaction.Commit();
                     }
                 }
@@ -94,7 +95,7 @@ namespace ALCT.Wechat.Mini.Program.BusinessLogics
                     {
                         var expiredTokens = (from t in dbContext.Set<Token>() where t.OpenId == member.OpenId select t).ToList();
                         dbContext.RemoveRange(expiredTokens);
-                        dbContext.AddAsync(token);
+                        dbContext.Add(token);
                         dbContext.SaveChanges();
                         transaction.Commit();
                     }

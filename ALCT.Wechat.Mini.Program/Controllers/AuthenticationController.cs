@@ -36,9 +36,9 @@ namespace ALCT.Wechat.Mini.Program.Controllers
 
         [HttpPost]
         [Route("login")]
-        public IActionResult Login([FromBody]string weixinCode) 
+        public IActionResult Login([FromBody]LoginRequest request) 
         {
-            return Ok(authenticationBusinessLogic.Login(weixinCode));
+            return Ok(authenticationBusinessLogic.Login(request.WeiXinCode));
         }
     }
 }

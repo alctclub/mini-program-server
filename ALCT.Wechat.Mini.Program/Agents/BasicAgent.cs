@@ -75,7 +75,13 @@ namespace ALCT.Wechat.Mini.Program.Agents
             {
                 try
                 {
-                    logger.LogError("call api failed with:" + response.Content.ReadAsStringAsync().Result);
+                    var result = response.Content.ReadAsStringAsync().Result;
+                    var responseModel = JsonConvert.DeserializeObject<ALCTBasicResponse>(result);
+                    if( responseModel != null && !string.IsNullOrEmpty(responseModel.Code)) 
+                    {
+                        return result;
+                    }
+                    logger.LogError("call api failed with:" + result);
                 } 
                 finally 
                 {
@@ -102,7 +108,7 @@ namespace ALCT.Wechat.Mini.Program.Agents
             }
             else
             {
-                    handler = new HttpClientHandler();
+                handler = new HttpClientHandler();
             }
 
             return new HttpClient(handler);

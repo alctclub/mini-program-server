@@ -25,7 +25,7 @@ namespace ALCT.Wechat.Mini.Program.Controllers
         {
             if(!CheckSessionId()) 
             {
-                return Ok(response);
+                return Unauthorized();
             }
 
             return Ok(shipmentBusinessLogic.GetShipments(GetSessionId()));
@@ -37,7 +37,7 @@ namespace ALCT.Wechat.Mini.Program.Controllers
         {
             if(!CheckSessionId()) 
             {
-                return Ok(response);
+                return Unauthorized();
             }
 
             return Ok(shipmentBusinessLogic.GetShipmentDetail(GetSessionId(), shipmentCode));
@@ -49,7 +49,7 @@ namespace ALCT.Wechat.Mini.Program.Controllers
         {
             if(!CheckSessionId()) 
             {
-                return Ok(response);
+                return Unauthorized();
             }
 
             return Ok(shipmentBusinessLogic.HandleEvent(GetSessionId(), operate, request));
@@ -61,7 +61,7 @@ namespace ALCT.Wechat.Mini.Program.Controllers
         {
             if(!CheckSessionId()) 
             {
-                return Ok(response);
+                return Unauthorized();
             }
 
             return Ok(shipmentBusinessLogic.GetOrderGoods(GetSessionId(), shipmentCode, orderCode));
